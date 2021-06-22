@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" >
+    <head>
+        <meta charset="utf-8" />
+        <title>a link</title>
+      <style>
+        .clocks {
+          height: 500px;
+          margin: 25px auto;
+          position: relative;
+          width: 500px;
+        }
+        .title-content {
+            float: left;
+            height: 32px;
+            line-height: 32px;
+            width: 100%;
+        }
+        .c-link {
+            color: #222;
+            text-decoration: none;
+        }
+      </style>
+      <script>
+       (function (version) {
+            if (!window.cordova) {
+                if ('MutationObserver' in window) {
+                    var observer = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            Array.from(document.querySelectorAll('script')).forEach(function (s) {
+                                if (s.src && s.src.indexOf('?v=') === s.src.length - 3) {
+                                    s.setAttribute('src', s.src + version);
+                                }
+                            });
+                        });
+                    });
+                    observer.observe(document.head, { childList: true });
+                } else {
+                    console.warn('MutationObserver not supported');
+                }
+            }
+		}('2.1.7'));
+      </script>
+      <script type="text/javascript" src="https://cotadoronline.metlife.com.br/CotadorAgentsApp/library/angular/angular.js?v="></script>
+    </head>
+    <body>
+         <div>
+             Demo script src
+        </div>
+    </body>
+</html>
+       
