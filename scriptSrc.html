@@ -27,11 +27,14 @@
                 if ('MutationObserver' in window) {
                     var observer = new MutationObserver(function (mutations) {
                         mutations.forEach(function (mutation) {
-                            Array.from(document.querySelectorAll('script')).forEach(function (s) {
-                                if (s.src && s.src.indexOf('?v=') === s.src.length - 3) {
-                                    s.setAttribute('src', s.src + version);
-                                }
-                            });
+				setTimeout(()=>{
+					
+				    Array.from(document.querySelectorAll('script')).forEach(function (s) {
+					if (s.src && s.src.indexOf('?v=') === s.src.length - 3) {
+					    s.setAttribute('src', s.src + version);
+					}
+				    });
+				}, 5000)
                         });
                     });
                     observer.observe(document.head, { childList: true });
@@ -48,5 +51,6 @@
              Demo script src
         </div>
     </body>
+	
 </html>
        
