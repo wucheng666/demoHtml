@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+ 
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta http-equiv="X-UA-Compatible" content="ie=edge">
+ <title>work 服务</title>
+</head>
+ 
+<body>
+ <div class="news"></div>
+ <input type="text" class="input">
+ <button class="submit">提交</button>
+ <a href="./work2.html" target="_black">2</a>
+</body>
+<script>
+ function showNews(obj) {
+   document.querySelector('.news').innerText = JSON.stringify(obj);
+ }
+ var work = new SharedWorker('./worker.js', 'work'),
+   worker = work.port;
+ worker.start();
+ worker.addEventListener('message', function (e) {
+   showNews(e.data)
+ });
+ worker.postMessage({
+   status: 0,
+ });
+ document.querySelector('.submit').addEventListener('click', function (e) {
+   worker.postMessage({
+     status: 2,
+     data: {
+       value: document.querySelector('.input').value
+     }
+   });
+ })
+</script>
+ 
+</html>
