@@ -5,7 +5,7 @@ self.addEventListener("connect", function (e) {
 	var port = e.ports[0];
 
 	port.addEventListener("message", function (e) {
-		console.log("jsworker message:", e)
+		console.log("jsworker message666:", e)
 // 		port.postMessage("Service says2: " + e.data);
 		// 如果消息内容为空，
 		// 说明该客户端想获取共享的数据 data
