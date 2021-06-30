@@ -16,10 +16,11 @@ function sendMessage () {
 	worker.port.postMessage("");
 // 	var counter = 0;
 	
-// 	setInterval(function () {
+	setInterval(function () {
+		worker.port.postMessage("");
 // 		counter++;
 // 		worker.port.postMessage("Hey sara!" + counter);
-// 	}, 1000);
+	}, 1000);
 }
 
 initJsWorker();
