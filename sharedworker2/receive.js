@@ -2,7 +2,7 @@ var worker = new SharedWorker("jsworker.js");
 
 function initJsWorker() {
 	worker.port.addEventListener("message", function (e) {
-    recMsg.innerHTML = e.data;
+//     recMsg.innerHTML = e.data;
     let divS = document.createElement("div");
 		divS.innerText = 'Waiting response: ' + e.data;
 		document.querySelector("#receiveContent").append(divS)
