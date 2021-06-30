@@ -14,7 +14,7 @@ function sendMessage () {
 	setInterval(function () {
 		counter++;
 		worker.port.postMessage("Hey sara!" + counter);
-	}, 5000);
+	}, 1000);
 }
 
 initJsWorker();
