@@ -5,7 +5,7 @@
 
 // 	port.addEventListener("message", function (e) {
 // 		console.log("jsworker message:", e)
-// 		port.postMessage("Service says: " + e.data);
+// 		port.postMessage("Service says2: " + e.data);
 // 	}, false);
 
 // 	port.start();
