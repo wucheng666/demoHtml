@@ -13,6 +13,7 @@ function initJsWorker() {
 }
 
 function sendMessage () {
+	worker.port.postMessage("");
 // 	var counter = 0;
 	
 // 	setInterval(function () {
