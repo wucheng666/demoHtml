@@ -2,17 +2,7 @@ var worker = new SharedWorker("jsworker.js");
 
 function initJsWorker() {
 	worker.port.addEventListener("message", function (e) {
-		if(!e.data){
-			//表明没有人启动过SharedWorker
-			//启动SharedWorker，并广播通知
-			broadcastMessage()
-		} else {
-			//表面已经有人启动了SharedWorker
-			let divS = document.createElement("div");
-			divS.innerText = 'Waiting response: ' + e.data;
-			document.body.append(divS)
-			console.log('Waiting response: ' + e.data);
-		}
+		broadcastMessage(e.data)
 	}, false);
 
 	worker.port.start();
@@ -24,10 +14,24 @@ function sendMessage () {
 	worker.port.postMessage("getData");
 }
 
-function broadcastMessage(){
-	setInterval(function () {
-		worker.port.postMessage("In the Meeting!");
-	}, 1000);
+function broadcastMessage(msg){
+	if(msg){
+		//表面已经有人启动了SharedWorker
+		setInterval(function () {
+			worker.port.postMessage("");
+		}, 1000);
+	} else {
+		//表明没有人启动过SharedWorker
+		//启动SharedWorker，并广播通知
+		let divS = document.createElement("div");
+		divS.innerText = 'Waiting response: ' + msg;
+		document.body.append(divS)
+		console.log('Waiting response: ' + msg);
+		
+		setInterval(function () {
+			worker.port.postMessage("In the Meeting!");
+		}, 1000);
+	}
 }
 
 initJsWorker();
