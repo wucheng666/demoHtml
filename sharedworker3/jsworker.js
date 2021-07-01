@@ -11,6 +11,7 @@ self.addEventListener("connect", function (e) {
 			port.postMessage(data)
 		  } else if(e.data){                      // 否则把数据保存
 			data = e.data
+			port.postMessage(data)
 		  }
 	}, false);
 
