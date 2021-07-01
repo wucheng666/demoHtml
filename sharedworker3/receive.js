@@ -5,9 +5,9 @@ function initJsWorker() {
 	worker.port.addEventListener("message", function (e) {
 // 		broadcastMessage(e.data)
 		let divS = document.createElement("div");
-		divS.innerText = 'Waiting response: ' + msg;
+		divS.innerText = 'Waiting response: ' + e.data;
 		document.body.append(divS)
-		console.log('Waiting response: ' + msg);
+		console.log('Waiting response: ' + e.data);
 	}, false);
 
 	worker.port.start();
