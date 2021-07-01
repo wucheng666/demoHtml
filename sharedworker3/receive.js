@@ -3,7 +3,11 @@ let timer = null
 
 function initJsWorker() {
 	worker.port.addEventListener("message", function (e) {
-		broadcastMessage(e.data)
+// 		broadcastMessage(e.data)
+		let divS = document.createElement("div");
+		divS.innerText = 'Waiting response: ' + msg;
+		document.body.append(divS)
+		console.log('Waiting response: ' + msg);
 	}, false);
 
 	worker.port.start();
@@ -11,7 +15,12 @@ function initJsWorker() {
 
 function sendMessage () {
 	//1.先获取查看有没有启动了SharedWorker
-	worker.port.postMessage("getData");
+// 	worker.port.postMessage("getData");
+	setInterval(function () {
+		worker.port.postMessage("");
+// 		counter++;
+// 		worker.port.postMessage("Hey sara!" + counter);
+	}, 1000);
 }
 
 function broadcastMessage(msg){
