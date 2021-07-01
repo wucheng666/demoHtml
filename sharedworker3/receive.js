@@ -17,7 +17,7 @@ function sendMessage () {
 	//1.先获取查看有没有启动了SharedWorker
 // 	worker.port.postMessage("getData");
 	setInterval(function () {
-		worker.port.postMessage("" + Date.now());
+		worker.port.postMessage("");
 // 		counter++;
 // 		worker.port.postMessage("Hey sara!" + counter);
 	}, 1000);
