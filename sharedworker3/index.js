@@ -15,6 +15,10 @@ function sendMessage () {
 }
 
 function broadcastMessage(msg){
+		let divS = document.createElement("div");
+		divS.innerText = 'Waiting response: ' + msg;
+		document.body.append(divS)
+		console.log('Waiting response: ' + msg);
 	if(msg){
 		if(timer) return;
 		//表面已经有人启动了SharedWorker
@@ -23,11 +27,11 @@ function broadcastMessage(msg){
 		}, 1000);
 	} else {
 		//表明没有人启动过SharedWorker
-		//启动SharedWorker，并广播通知
-		let divS = document.createElement("div");
-		divS.innerText = 'Waiting response: ' + msg;
-		document.body.append(divS)
-		console.log('Waiting response: ' + msg);
+// 		//启动SharedWorker，并广播通知
+// 		let divS = document.createElement("div");
+// 		divS.innerText = 'Waiting response: ' + msg;
+// 		document.body.append(divS)
+// 		console.log('Waiting response: ' + msg);
 		
 		if(timer) return;
 		timer = setInterval(function () {
