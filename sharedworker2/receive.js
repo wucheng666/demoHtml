@@ -24,4 +24,4 @@ function initJsWorker() {
 // }
 
 initJsWorker();
-sendMessage();
+// sendMessage();
