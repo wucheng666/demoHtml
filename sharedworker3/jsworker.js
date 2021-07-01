@@ -9,7 +9,7 @@ self.addEventListener("connect", function (e) {
 		// port.postMessage("jsworker broadcast:" + e.data);
 		if (e.data === 'getData') {       // 如果是get 则返回数据给客户端
 			port.postMessage(data)
-		  } else {                      // 否则把数据保存
+		  } else if(e.data){                      // 否则把数据保存
 			data = e.data
 		  }
 	}, false);
