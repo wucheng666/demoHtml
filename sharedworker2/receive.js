@@ -12,16 +12,16 @@ function initJsWorker() {
 	worker.port.start();
 }
 
-// function sendMessage () {
-// // 	worker.port.postMessage("");
-// // 	var counter = 0;
+function sendMessage () {
+// 	worker.port.postMessage("");
+// 	var counter = 0;
 	
-// 	setInterval(function () {
-// 		worker.port.postMessage("");
-// // 		counter++;
-// // 		worker.port.postMessage("Hey sara!" + counter);
-// 	}, 1000);
-// }
+	setInterval(function () {
+		worker.port.postMessage("");
+// 		counter++;
+// 		worker.port.postMessage("Hey sara!" + counter);
+	}, 1000);
+}
 
 initJsWorker();
-// sendMessage();
+sendMessage();
