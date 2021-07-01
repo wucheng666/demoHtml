@@ -1,5 +1,5 @@
 var worker = new SharedWorker("jsworker.js");
-let timer = null
+let timer = null;
 
 function initJsWorker() {
 	worker.port.addEventListener("message", function (e) {
