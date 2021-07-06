@@ -5,6 +5,9 @@ function initJsWorker() {
 	worker.port.addEventListener("message", function (e) {
 		broadcastMessage(e.data)
 	}, false);
+	worker.port.addEventListener("messageerror", (event) => {
+		console.error(`Error receiving message from worker: ${event}`);
+	});
 
 	worker.port.start();
 }
