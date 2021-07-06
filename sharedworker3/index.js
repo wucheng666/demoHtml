@@ -1,5 +1,5 @@
 var worker = new SharedWorker("jsworker.js");
-let timer = null
+let timer = null;
 
 function initJsWorker() {
 	worker.port.addEventListener("message", function (e) {
@@ -15,24 +15,20 @@ function sendMessage () {
 }
 
 function broadcastMessage(msg){
-		let divS = document.createElement("div");
-		divS.innerText = 'Waiting response: ' + msg;
-		document.body.append(divS)
-		console.log('Waiting response: ' + msg);
+	
+	let divS = document.createElement("div");
+	divS.innerText = 'Waiting response: ' + msg;
+	document.body.append(divS)
 	if(msg){
+		console.log("已经存在 SharedWorker...")
 		if(timer) return;
-		//表面已经有人启动了SharedWorker
+		//表明已经有人启动了SharedWorker
 		timer = setInterval(function () {
 			worker.port.postMessage("");
 		}, 1000);
 	} else {
 		//表明没有人启动过SharedWorker
-// 		//启动SharedWorker，并广播通知
-// 		let divS = document.createElement("div");
-// 		divS.innerText = 'Waiting response: ' + msg;
-// 		document.body.append(divS)
-// 		console.log('Waiting response: ' + msg);
-		
+		console.log("启动 SharedWorker...")
 		if(timer) return;
 		timer = setInterval(function () {
 			worker.port.postMessage("In the Meeting!" + Date.now());
