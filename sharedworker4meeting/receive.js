@@ -3,7 +3,7 @@ let sendMessages = "";
 
 function initJsWorker() {
 	worker.port.addEventListener("message", function (e) {
-		broadcastMessage(e.data)
+// 		broadcastMessage(e.data)
 		if(!e.data){
 			//表明没有人启动过SharedWorker
 			console.log("启动 SharedWorker...")
