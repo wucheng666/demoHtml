@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeetLog</title>
+    <script>
+        function formSubmit() {
+            //set log
+            // window.meetLocalLog && window.meetLocalLog.writeLog({meetId : 12345678, message : `[userAction] form submit`})
+           // window.meetLocalLog && window.meetLocalLog.writeLog(`[userAction] form submit`)
+
+            console.log("formSubmit...")
+            document.form1.submit();
+            // event.preventDefault();
+            return ;
+        }
+        function firstNameChange() {
+            //set log
+            // window.meetLocalLog && window.meetLocalLog.writeLog({meetId : 12345678, message :`[userAction] set firstName change`})
+            //window.meetLocalLog && window.meetLocalLog.writeLog(`[userAction] set firstName change`)
+            console.log("firstNameChange...")
+        }
+        function lastNameChange() {
+            //set log
+            // window.meetLocalLog && window.meetLocalLog.writeLog({meetId : 12345678, message :`[userAction] set lastName change`})
+           // window.meetLocalLog && window.meetLocalLog.writeLog(`[userAction] set lastName change`)
+            console.log("lastNameChange...")
+        }
+        function downloadLog() {
+            console.log(window.meetLocalLog.getLog())
+//             window.meetLocalLog.getLog().then(res => {
+//                 var blob = new Blob([res], {type: 'application/vnd.ms-excel;charset=utf-8'});  
+//                 var downloadElement = document.createElement('a');
+//                 var href = window.URL.createObjectURL(blob);     
+//                 downloadElement.href = href
+//                 downloadElement.download = '12345678.txt';     
+//                 document.body.appendChild(downloadElement);
+//                 downloadElement.click();    
+//                 document.body.removeChild(downloadElement);    
+//                 window.URL.revokeObjectURL(href);   
+//             })
+        }
+    </script>
+</head>
+<body>
+    <h1>Operate the element, it will record the log</h1>
+    <form id="form1" action="./index.html" method="POST">
+        First name: <input type="text" name="fname" onchange="firstNameChange()"><br>
+        Last name: <input type="text" name="lname" onchange="lastNameChange()"><br>
+        <input type="submit" value="Submit" onclick="formSubmit()">
+      </form>
+
+      <input type="submit" value="downloadLog" onclick="downloadLog()">
+<!--     <script src="../dist/index.js"></script> -->
+    <script>
+//         window.meetLocalLog = new MeetLog.default();
+//         console.log('meetLocalLog: ', window.meetLocalLog);
+    </script>
+</body>
+</html>
