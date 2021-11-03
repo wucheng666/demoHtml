@@ -26,19 +26,26 @@ function handleSuccess(stream) {
   // window.stream = stream; // make variable available to browser console
   // audio.srcObject = stream;
 
+
   let audioContext = new AudioContext({ sampleRate: 16000 });
   document.getElementById('tips').innerHTML = audioContext.sampleRate;
 
   //创建音频处理的源节点
   let source = audioContext.createMediaStreamSource(stream);
   //创建自定义处理节点
-  let scriptNode = audioContext.createScriptProcessor(4096, 1, 1);
+
+  await audioContext.audioWorklet.addModule('white-noise-processor.js')
+  // let scriptNode = audioContext.createScriptProcessor(4096, 1, 1);
+  const whiteNoiseNode = new AudioWorkletNode(audioContext, 'white-noise-processor')
   //创建音频处理的输出节点
-  let dest = audioContext.createMediaStreamDestination();
+  // let dest = audioContext.createMediaStreamDestination();
 
   //串联连接
-  source.connect(scriptNode);
-  scriptNode.connect(dest);
+  // whiteNoiseNode.connect(audioContext.destination)
+  // source.connect(whiteNoiseNode);
+  // scriptNode.connect(dest);
+
+  source.connect(whiteNoiseNode).connect(audioContext.destination)
 
 
 }
