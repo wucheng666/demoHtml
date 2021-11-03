@@ -16,7 +16,7 @@ const constraints = window.constraints = {
   video: false
 };
 
-function handleSuccess(stream) {
+async function handleSuccess(stream) {
   // const audioTracks = stream.getAudioTracks();
   // console.log('Got stream with constraints:', constraints);
   // console.log('Using audio device: ' + audioTracks[0].label);
