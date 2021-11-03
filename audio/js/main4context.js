@@ -27,7 +27,7 @@ function handleSuccess(stream) {
   // audio.srcObject = stream;
 
   let audioContext = new AudioContext({ sampleRate: 16000 });
-  document.getElementById('tips').innerHTML = ac.sampleRate;
+  document.getElementById('tips').innerHTML = audioContext.sampleRate;
 
   //创建音频处理的源节点
   let source = audioContext.createMediaStreamSource(stream);
