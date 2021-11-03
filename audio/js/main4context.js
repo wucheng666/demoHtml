@@ -45,8 +45,8 @@ async function handleSuccess(stream) {
   // source.connect(whiteNoiseNode);
   // scriptNode.connect(dest);
 
-//   source.connect(whiteNoiseNode).connect(audioContext.destination)
-  source.connect(audioContext.destination)
+  source.connect(whiteNoiseNode).connect(audioContext.destination)
+//   source.connect(audioContext.destination)
 
 
 }
