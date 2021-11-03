@@ -34,7 +34,7 @@ async function handleSuccess(stream) {
   let source = audioContext.createMediaStreamSource(stream);
   //创建自定义处理节点
 
-  await audioContext.audioWorklet.addModule('white-noise-processor.js')
+  await audioContext.audioWorklet.addModule('https://wucheng666.github.io/demoHtml/audio/js/white-noise-processor.js')
   // let scriptNode = audioContext.createScriptProcessor(4096, 1, 1);
   const whiteNoiseNode = new AudioWorkletNode(audioContext, 'white-noise-processor')
   //创建音频处理的输出节点
