@@ -4,7 +4,9 @@
 </style>
 <script>
   function createError(){
+    setTimeout(()=>{
      throw new Error("error...throw")
+    }, 5000)
   }
   createError()
 
