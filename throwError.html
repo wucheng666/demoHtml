@@ -14,12 +14,16 @@
      throw new Error("error...throw2 executed immediately")
   }
   createError2()
+  
+  function sss(){
+    return Promise.reject("throw...error222")
+  }
 
 </script>
 </head>
 
 <body>
-<h1>Hello World !</h1>
+<h1 onclick="sss">Hello World !</h1>
   
 </body>
 </html>
