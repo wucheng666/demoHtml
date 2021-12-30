@@ -5,10 +5,15 @@
 <script>
   function createError(){
     setTimeout(()=>{
-     throw new Error("error...throw")
+     throw new Error("error...throw after 5s")
     }, 5000)
   }
   createError()
+  
+  function createError2(){
+     throw new Error("error...throw2 executed immediately")
+  }
+  createError2()
 
 </script>
 </head>
