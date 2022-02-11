@@ -78,7 +78,7 @@
                 initAngle = transform.angle || 0;
             }
 
-            el.className = '';
+           // el.className = '';
             transform.rz = 1;
             transform.angle = initAngle + ev.rotation;
             requestElementUpdate();
@@ -120,7 +120,7 @@
                 initScale = transform.scale || 1;
             }
 
-            el.className = '';
+            //el.className = '';
             transform.scale = initScale * ev.scale;
 
             requestElementUpdate();
