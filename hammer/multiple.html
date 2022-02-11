@@ -50,6 +50,9 @@
     <script>
         var transform;
         var ticking = false;
+        var el = document.getElementById("content")
+        var START_X = Math.round((window.innerWidth - el.offsetWidth) / 2);
+        var START_Y = Math.round((window.innerHeight - el.offsetHeight) / 2);
         function initHammer(el){
             var mc = new Hammer(el, { multiUser: true });
             mc.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([mc.get('pan'), mc.get('rotate')]);
@@ -123,6 +126,26 @@
             requestElementUpdate();
         }
 
+
+        function resetElement() {
+            el.className = el.className + ' animate';
+            transform = {
+                translate: { x: 0, y: 0 },
+                scale: 1,
+                angle: 0,
+                rx: 0,
+                ry: 0,
+                rz: 0
+            };
+
+            requestElementUpdate();
+
+            // if (log.textContent.length > 2000) {
+            //     log.textContent = log.textContent.substring(0, 2000) + "...";
+            // }
+        }
+        
+        resetElement()
         //init
         initHammer(document.getElementById("content"))
 
