@@ -57,7 +57,7 @@
             var mc = new Hammer(el, { multiUser: true });
             mc.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([mc.get('pan'), mc.get('rotate')]);
             
-            // mc.on("panstart panmove", onPan);
+            mc.on("panstart panmove", onPan);
             mc.on("rotatestart rotatemove", onRotate);
             mc.on("pinchstart pinchmove", onPinch);
             // mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
@@ -70,6 +70,17 @@
             //     el.innerText = ev.toDirString();
             // });
 
+        }
+        
+        function onPan(ev) {
+            el.className = '';
+            transform.translate = {
+                x: START_X + ev.deltaX,
+                y: START_Y + ev.deltaY
+            };
+
+            requestElementUpdate();
+            // logEvent(ev.type);
         }
 
         var initAngle = 0;
