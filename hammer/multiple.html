@@ -30,7 +30,6 @@
             height: 60px;
             background: pink;
         }
-        
         .content {
             background: lightblue;
             flex:1;
@@ -38,17 +37,44 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow:hidden;
+            overflow: hidden;
+            position: relative;
         }
-        .content .dscontent{
-            background: #eee;
+        .center-pointer{
+            height: 5px;
+            width: 5px;
+            background-color: red;
+            position: absolute;
+        }
+        .dscontent{
+            background: linear-gradient(180deg, #f0f0f5, #9581e7, #efff1d);
             height: 200px;
             width: 100%;
+            border: 1px solid #000;
+            background-image: url("./bkg.jpeg");
+            background-size: 100%;
         }
         .footer {
             height: 60px;
             background: lightcoral;
         }
+        .square{
+            width: 90px;
+            height: 90px;
+            transition: transform 300ms ease-out;
+            color: #fff;
+            line-height: 90px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+
+        .animate {
+            -webkit-transition: all .3s;
+            -moz-transition: all .3s;
+            transition: all .3s;
+        }
+
     </style>
 </head>
 <body>
@@ -56,23 +82,88 @@
         <div class="header">navigation</div>
         <div id="content" class="content">
             <div id="dscontent" class="dscontent"></div>
+            <div class="center-pointer"></div>
         </div>
         <div class="footer"></div>
     </div>
     <script src="hammer.js"></script>
+    
     <script>
+
+function point2D(x,y){
+	return {x : x,y : y};
+}
+
+        var tMatrix = [1,0,0,1,0,0]//x缩放，无，无，y缩放，x平移，y平移
+        var actionDoing = false
+
+        var duration = ''
+        const reqAnimationFrame =
+            window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function(callback){
+                return window.setTimeout(callback, 1000 / 60)
+            };
+        
         var transform;
         var ticking = false;
         var el = document.getElementById("dscontent")
-        var START_X = Math.round((window.innerWidth - el.offsetWidth) / 2);
-        var START_Y = Math.round((window.innerHeight - el.offsetHeight) / 2);
+
+        let panStartY = 0;
+        // let x = (window.innerWidth - el.clientWidth) * 0.5; 
+        // let y = (window.innerHeight - el.clientHeight) * 0.5; 
+
+        var lastTranslate = {x: 0, y: 0} //lastMoveDistance 当前操作的前一次移动的距离
+         // pinch
+        var initScale = 1;
+        var poscenter = {x: 0, y: 0} //双指中心
+        // var lastcenter = {x: el.offsetWidth/2, y: el.offsetHeight/2} //lastTargeDomCenter 需要缩放的元素的中心位置
+        var elRect = el.getBoundingClientRect()
+        var lastcenter = {x: elRect.left + el.offsetWidth/2, y:  elRect.top + el.offsetHeight/2} //lastTargeDomCenter 需要缩放的元素的中心位置
+        var center = lastcenter;
+
         function initHammer(el){
-            var mc = new Hammer(el, { multiUser: true });
-            mc.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([mc.get('pan'), mc.get('rotate')]);
+            // var mc = new Hammer(el, { multiUser: true });
+            var mc = new Hammer.Manager(el);
+            // var mc = new Hammer(el, { recognizers: [] });
             
-            mc.on("panstart panmove", onPan);
-            mc.on("rotatestart rotatemove", onRotate);
-            mc.on("pinchstart pinchmove", onPinch);
+            // mc.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([mc.get('pan'), mc.get('rotate')]);
+            mc.add(new Hammer.Pan({ threshold: 0, pointers: 1 }))
+            mc.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([mc.get('pan')]);
+            
+            // mc.add(new Hammer.Tap({ pointers: 1, event: 'doubletap', taps: 2 ,interval: 500, time: 500}));
+            // mc.add(new Hammer.Tap());
+
+            // mc.add(new Hammer.Pinch({ threshold: 0 }))
+            // mc.get('doubletap').recognizeWith('singletap');
+            // mc.get('singletap').requireFailure('doubletap');
+
+            var singleTap = new Hammer.Tap({event: 'singletap' }); 
+            var doubleTap = new Hammer.Tap({event: 'doubletap', taps: 2 ,interval: 500, time: 500, posThreshold: 1000}); 
+
+            mc.add([doubleTap, singleTap]); 
+
+            doubleTap.recognizeWith(singleTap); 
+            singleTap.requireFailure([doubleTap]);
+            
+
+            mc.on("panmove", onPan);
+            mc.on("panstart",onPanStart)
+            // mc.on("rotatestart rotatemove", onRotate);
+            // mc.on("pinchstart pinchmove pinchend", onPinch);
+            mc.on("pinchstart", onPinchStart);
+            mc.on("pinchmove", onPinch);
+            mc.on("pinchend", onPinchEnd);
+
+
+            mc.on("singletap", onTap);
+            mc.on("doubletap",onDoubleTap);
+             
+            // mc.on('doubletap', function() { console.log('double tap!') });
+
             // mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
             // mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
             // mc.get('pinch').set({ enable: true });
@@ -83,17 +174,112 @@
             //     el.innerText = ev.toDirString();
             // });
 
+
+
+            // mc.add( new Hammer.Tap({ event: 'doubletap', taps: 2 }) );
+            // mc.add( new Hammer.Tap({ event: 'singletap' }) );
+
+            // mc.get('doubletap').recognizeWith('singletap');
+            // mc.get('singletap').requireFailure('doubletap');
+
+
+            // mc.on('doubletap', function(ev) {
+            //     console.log(ev.type);
+            // })
+            // mc.on('singletap', function(ev) {
+            //     console.log(ev.type);
+            // });
         }
-        
-        function onPan(ev) {
-//             el.className = '';
+        var timer;
+        function onTap(){
+                console.log(" tap...")
+            // if(timer){
+            //     //doubule tap
+            //     console.log("doubule tap...")
+            //     timer && clearTimeout(timer);
+            //     timer = null;
+            //     return
+            // }
+            // timer && clearTimeout(timer);
+            // timer = setTimeout(function () {
+            //     console.log(" tap...")
+            //     timer && clearTimeout(timer);
+            //     timer = null;
+            //     // resetElement();
+            // }, 200);
+
+        }
+
+        function onDoubleTap(ev){
+            console.log("onDoubleTap...")
+            resetElement()
+            // duration = "1s ease all";
+            // var nowScale = tMatrix[0];
+            // if(nowScale != 1 || tMatrix[4]!= 0){
+            //     //scale不等于1，要重回1
+            //     tMatrix[0] = tMatrix[3] = 1;
+            //     tMatrix[4] = tMatrix[5] = 0;
+            // }else{
+            //     var pointer = ev.center
+            //     var scale = 2
+            //     tMatrix[0] = tMatrix[3] = scale
+            //     //var last = point2D
+            //     //tMatrix[4] = pointer.x - ((pointer.x-lastcenter.x) * scale + lastcenter.x);
+            //     //tMatrix[5] = pointer.y - ((pointer.y-lastcenter.y) * scale + lastcenter.y);
+            //     tMatrix[4] = (1 - scale) * ( pointer.x - center.x) 
+            //     tMatrix[5] = (1 - scale) * ( pointer.y - center.y)
+            // }
+
+            // transform.translate = {
+            //     x: tMatrix[4],
+            //     y: tMatrix[5]
+            // };
+            // transform.scale = tMatrix[0]
+            // requestElementUpdate('doubleTap');
+        }
+
+        function onPanStart(ev){
+            ev.target.className = ev.target.className.replace("animate", "")
+            lastTranslate = point2D(tMatrix[4],tMatrix[5])//缓存上一次的偏移值
+        }   
+
+        function onPan(ev, flag) {
+            if(actionDoing) return
+            duration = ''
+            // console.log("pan...", actionDoing)
+            actionDoing = true
+            let newX = lastTranslate.x + ev.deltaX
+            let newY = lastTranslate.y + ev.deltaY
+
+            const {offsetWidth, offsetHeight} = ev.target
+            const {scale} = transform
+
+            //limit left, right
+            let moveLimitMaxWidth = offsetWidth * (scale - 1) / 2
+            if(Math.abs(newX) > moveLimitMaxWidth) {
+                newX = newX >= 0 ? moveLimitMaxWidth : - moveLimitMaxWidth
+            }
+
+            // top, bottom
+            const {offsetHeight: targetParentHeight} = ev.target.parentElement
+            let moveLimitMaxHeight = (offsetHeight * scale - targetParentHeight) / 2
+
+            if(offsetHeight * scale <= targetParentHeight){
+                //如果缩放后高度还没有超过父容器，则竖直方向不能移动
+                newY = panStartY
+            } else if(Math.abs(newY) > moveLimitMaxHeight) {
+                newY = newY >= 0 ? moveLimitMaxHeight : - moveLimitMaxHeight
+            }
+
+            tMatrix[4] = newX
+            tMatrix[5] = newY
+
             transform.translate = {
-                x: START_X + ev.deltaX,
-                y: START_Y + ev.deltaY
+                x: newX,
+                y: newY
             };
 
-            requestElementUpdate();
-            // logEvent(ev.type);
+            requestElementUpdate("panmove1");
         }
 
         var initAngle = 0;
@@ -102,54 +288,132 @@
                 initAngle = transform.angle || 0;
             }
 
-           // el.className = '';
+            el.className = '';
             transform.rz = 1;
             transform.angle = initAngle + ev.rotation;
-            requestElementUpdate();
+            requestElementUpdate("onRotate");
         }
 
         function requestElementUpdate() {
+
+	        arguments && console.log(arguments[0])
+
             if(!ticking) {
                 reqAnimationFrame(updateElementTransform);
                 ticking = true;
             }
         }
 
-        var reqAnimationFrame = (function () {
-            return window[Hammer.prefixed(window, 'requestAnimationFrame')] || function (callback) {
-                window.setTimeout(callback, 1000 / 60);
-            };
-        })();
+        // var reqAnimationFrame = (function () {
+        //     return window[Hammer.prefixed(window, 'requestAnimationFrame')] || function (callback) {
+        //         window.setTimeout(callback, 1000 / 60);
+        //     };
+        // })();
 
         function updateElementTransform() {
             var value = [
-                        'translate3d(' + transform.translate.x + 'px, ' + transform.translate.y + 'px, 0)',
-                        'scale(' + transform.scale + ', ' + transform.scale + ')',
-                        'rotate3d('+ transform.rx +','+ transform.ry +','+ transform.rz +','+  transform.angle + 'deg)'
+                        'translate3d(' + transform.translate.x + 'px, ' + transform.translate.y + 'px, 0px)',
+                        'scale(' + transform.scale + ', ' + transform.scale + ')'
+                        // ,
+                        // 'rotate3d('+ transform.rx +','+ transform.ry +','+ transform.rz +','+  transform.angle + 'deg)'
             ];
+	        el.style.transition = duration
 
             value = value.join(" ");
+            // console.log("update...", value)
             el.textContent = value;
             el.style.webkitTransform = value;
             el.style.mozTransform = value;
             el.style.transform = value;
+
+
             ticking = false;
+            actionDoing = false;
         }
 
-        // pinch
 
-        var initScale = 1;
-        function onPinch(ev) {
-            if(ev.type == 'pinchstart') {
-                initScale = transform.scale || 1;
+        function onPinchStart(ev){
+            ev.target.className = ev.target.className.replace("animate", "")
+
+            lastTranslate = point2D(tMatrix[4],tMatrix[5])//记录上一次的偏移值
+            initScale = tMatrix[0] || 1;
+            poscenter = point2D(ev.center.x, ev.center.y)
+            
+            lastcenter = point2D(center.x + lastTranslate.x,center.y + lastTranslate.y)//重新计算放大后的中心坐标
+            poscenter = point2D(ev.center.x - lastcenter.x, ev.center.y-lastcenter.y)
+        }
+
+        function onPinchEnd(ev){
+            let targetRect = ev.target.getBoundingClientRect()
+            let targetParentRect = ev.target.parentElement.getBoundingClientRect()
+
+            //left
+            if(targetRect.left > targetParentRect.left){
+                //矫正，左侧贴合父容器左侧
+                transform.translate.x -= (targetRect.left - targetParentRect.left)
+                tMatrix[4] = transform.translate.x
             }
 
-            //el.className = '';
-            transform.scale = initScale * ev.scale;
+            //top
+            if(targetRect.top > targetParentRect.top){
+                if(targetRect.height >= targetParentRect.height){
+                    transform.translate.y -= (targetRect.top - targetParentRect.top)
+                    tMatrix[5] = transform.translate.y
+                } else {
+                    transform.translate.y = 0
+                    tMatrix[5] = 0
+                }
+            }
 
-            requestElementUpdate();
+            //right
+            if(targetRect.right < targetParentRect.right){
+                //目标发生了左移，需要纠正，不能小于父容器
+                transform.translate.x += (targetParentRect.right - targetRect.right)
+                tMatrix[4] = transform.translate.x
+            }
+
+            //bottom
+            if(targetRect.bottom < targetParentRect.bottom){
+                if(targetRect.height >= targetParentRect.height){
+                    transform.translate.y += (targetParentRect.bottom - targetRect.bottom)
+                    tMatrix[5] = transform.translate.y
+                } else {
+                    transform.translate.y = 0
+                    tMatrix[5] = 0
+                }
+            }
+
+            // duration = "100s ease all";
+
+            requestElementUpdate("pinchend");
         }
 
+        function onPinch(ev) {
+            if(actionDoing) return
+            duration = ''
+            actionDoing = true
+
+            if(initScale * ev.scale <= 1) {
+                //限制最小缩放比例为1
+                ev.scale = 1 / initScale
+            }
+
+            //center point
+            let centerP = document.querySelector(".center-pointer")
+            centerP.style.top = ev.center.y + "px"
+            centerP.style.left = ev.center.x + "px"
+            
+            tMatrix[0] = tMatrix[3] = initScale * ev.scale;
+            tMatrix[4] = (1 - ev.scale) * poscenter.x + lastTranslate.x
+            tMatrix[5] = (1 - ev.scale) * poscenter.y + lastTranslate.y
+
+             transform.translate = {
+                        x: tMatrix[4],
+                        y: tMatrix[5]
+                    };
+            transform.scale = tMatrix[0]
+            requestElementUpdate("pinchmove");
+        }
 
         function resetElement() {
             el.className = el.className + ' animate';
@@ -161,19 +425,17 @@
                 ry: 0,
                 rz: 0
             };
+            tMatrix = [1,0,0,1,0,0]
+            lastTranslate = {x: 0, y: 0}
+            initScale = 1
+            poscenter = {x: 0, y: 0}
 
-            requestElementUpdate();
-
-            // if (log.textContent.length > 2000) {
-            //     log.textContent = log.textContent.substring(0, 2000) + "...";
-            // }
+            requestElementUpdate("reset");
         }
         
         resetElement()
         //init
-        initHammer(document.getElementById("content"))
-
-
+        initHammer(el)
     </script>
 </body>
 </html>
